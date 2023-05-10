@@ -1,7 +1,7 @@
 import { ObjectId } from "https://deno.land/x/mongo@v0.31.2/mod.ts";
 import { mongoUri } from "../config/environment.ts";
 import { MongoClient } from "../deps.ts";
-import { Product, ProductToAdd } from "../types/products.ts";
+import { Product, ProductToAdd, ProductToUpdate } from "../types/products.ts";
 
 const client = new MongoClient();
 
@@ -28,5 +28,17 @@ export const addProductController = async (product: ProductToAdd) => {
     _id,
   };
 };
+
+export const updateProductController = async (product: ProductToUpdate) => {
+  await productsCollection.updateOne({ _id: new ObjectId(product._id) },
+  { $set: { name: product.name, price: product.price } });
+
+  return {
+    ...product
+  };
+}
+
+export const deleteProductController = async (productId: string) => await productsCollection.deleteOne({_id: new ObjectId(productId)})
+
 
 export const findProductController = (productId: string) => productsCollection.findOne({ _id: new ObjectId(productId) });
